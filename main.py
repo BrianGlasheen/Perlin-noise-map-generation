@@ -1,9 +1,13 @@
 import noise
 from PIL import Image, ImageTk
 import tkinter as tk 
+from tkinter import filedialog
 import numpy as np
 from random import randint
 import math
+import os
+
+DIR_PATH = os.path.dirname(os.path.realpath(__file__))
 
 root = tk.Tk()
 root.wm_geometry("900x700")
@@ -41,8 +45,8 @@ planet_radius.grid(row=4, column=2)
 plt_l = tk.Label(root, text="Radius ")
 plt_l.grid(row=4, column=1)
 
-gradient = tk.Scale(root, from_=1, to=50, orient=tk.HORIZONTAL)
-gradient.set(50)
+gradient = tk.Scale(root, from_=1, to=100, orient=tk.HORIZONTAL)
+gradient.set(100)
 gradient.grid(row=5, column=2)
 grd_l = tk.Label(root, text="Gradient ")
 grd_l.grid(row=5, column=1)
@@ -57,19 +61,19 @@ update_button.grid(row=9, column=1, columnspan=2, sticky=tk.NSEW)
 new_map_button = tk.Button(root, text="New map", command=lambda: button_press('new', canvas))
 new_map_button.grid(row=10, column=1, columnspan=2, sticky=tk.NSEW)
 
-save_button = tk.Button(root, text="Save", command=lambda: button_press('save'))
+save_button = tk.Button(root, text="Save", command=lambda: button_press('save', DIR_PATH))
 save_button.grid(row=11, column=1, columnspan=2, sticky=tk.NSEW)
 
 log = tk.Text(root, height=4, width=23, font=("Arial", 10))
 log.grid(row=16, column=1, rowspan=4, columnspan=3)
 
-def button_press(s, canvas=0, noise_map=0):
+def button_press(s, canvas=0, noise_map=0, DIR_PATH=0):
     if s == 'new':
         new_map(canvas)
     elif s == 'update':
         update_map(canvas, noise_map)
     elif s == 'save':
-        save_img()
+        save_img(DIR_PATH)
 
 def gen_noise(shape, scale, octaves, persistence, lacunarity):
 
@@ -196,9 +200,11 @@ def plot_map(canvas, map_):
     canvas.delete('all')
     imagesprite = canvas.create_image(350,350,image=tk_img)
 
-def save_img():
+def save_img(DIR_PATH):
     try:
-        image.save("map.png")
+        root.filename1 = filedialog.asksaveasfilename(initialdir = DIR_PATH,title = "Select file",filetypes = (("Png","*.png"),("All types","*.all")))
+        image.save(root.filename1 + '.png')
     except NameError:
-        log.insert(tk.END, "No image\n")
+        log.insert(tk.END, "Error saving\n")
+
 root.mainloop()
